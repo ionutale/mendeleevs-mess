@@ -7,6 +7,8 @@
 	let view = $state<'sticker' | 'classic'>('sticker');
 	let missingOnly = $state(false);
 
+	let { onShowCertificate }: { onShowCertificate?: () => void } = $props();
+
 	const discovered = $derived(new Set($game.discovered));
 </script>
 
@@ -35,6 +37,12 @@
 			<input type="checkbox" bind:checked={missingOnly} />
 			Only missing
 		</label>
+
+		{#if $game.completedAt && onShowCertificate}
+			<button class="certificate-link" type="button" onclick={onShowCertificate}>
+				View certificate
+			</button>
+		{/if}
 	</div>
 
 	{#if view === 'sticker'}
@@ -115,5 +123,15 @@
 		width: 18px;
 		height: 18px;
 		accent-color: var(--ink);
+	}
+
+	.certificate-link {
+		min-height: 38px;
+		padding: 6px 10px;
+		font-size: 12px;
+		font-weight: 700;
+		background: var(--card);
+		border: 1.5px solid var(--ink);
+		border-radius: 6px 9px 5px 10px;
 	}
 </style>

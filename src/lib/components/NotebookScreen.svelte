@@ -12,6 +12,8 @@
 	let query = $state('');
 	let selected = $state<string | null>(null);
 
+	let { onShowCertificate }: { onShowCertificate?: () => void } = $props();
+
 	const selectedElement = $derived(
 		selected ? (ELEMENTS.find((element) => element.symbol === selected) ?? null) : null
 	);
@@ -51,6 +53,11 @@
 		<p class="progress" aria-label="Elements discovered">
 			{$game.discovered.length} / {ELEMENTS.length}
 		</p>
+		{#if $game.completedAt && onShowCertificate}
+			<button class="certificate-link" type="button" onclick={onShowCertificate}>
+				View certificate
+			</button>
+		{/if}
 	</header>
 
 	{#if selectedElement}
@@ -131,6 +138,16 @@
 		border: 1.5px solid var(--ink);
 		border-radius: 6px 9px 5px 10px;
 		white-space: nowrap;
+	}
+
+	.certificate-link {
+		min-height: 34px;
+		padding: 4px 9px;
+		font-size: 11px;
+		font-weight: 700;
+		background: var(--card);
+		border: 1.5px solid var(--ink);
+		border-radius: 6px 9px 5px 10px;
 	}
 
 	.controls {

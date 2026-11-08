@@ -3,18 +3,29 @@
 	import ForgeScreen from './ForgeScreen.svelte';
 	import NotebookScreen from './NotebookScreen.svelte';
 	import TableScreen from './TableScreen.svelte';
+	import WinScreen from './WinScreen.svelte';
 
 	const current = $derived(
 		$game.lastScreen === 'table' ? 'table' : $game.lastScreen === 'notebook' ? 'notebook' : 'forge'
 	);
+
+	let showCertificate = $state(false);
+
+	$effect(() => {
+		if ($game.completedAt && !$game.certificateSeen) showCertificate = true;
+	});
 </script>
 
 {#if current === 'table'}
-	<TableScreen />
+	<TableScreen onShowCertificate={() => (showCertificate = true)} />
 {:else if current === 'notebook'}
-	<NotebookScreen />
+	<NotebookScreen onShowCertificate={() => (showCertificate = true)} />
 {:else}
 	<ForgeScreen />
+{/if}
+
+{#if showCertificate}
+	<WinScreen onClose={() => (showCertificate = false)} />
 {/if}
 
 <nav class="bottom-nav" aria-label="Main">
