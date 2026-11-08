@@ -57,6 +57,10 @@ export function markCertificateSeen(): void {
 	game.update((state) => ({ ...state, certificateSeen: true }));
 }
 
+export function clearScrapLog(): void {
+	game.update((state) => ({ ...state, scrapLog: [] }));
+}
+
 export function resetGame(): void {
 	clearState();
 	const state = createInitialState(Date.now());

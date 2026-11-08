@@ -1,13 +1,18 @@
 <script lang="ts">
 	import { game, setScreen } from '../stores/game';
 	import ForgeScreen from './ForgeScreen.svelte';
+	import NotebookScreen from './NotebookScreen.svelte';
 	import TableScreen from './TableScreen.svelte';
 
-	const current = $derived($game.lastScreen === 'table' ? 'table' : 'forge');
+	const current = $derived(
+		$game.lastScreen === 'table' ? 'table' : $game.lastScreen === 'notebook' ? 'notebook' : 'forge'
+	);
 </script>
 
 {#if current === 'table'}
 	<TableScreen />
+{:else if current === 'notebook'}
+	<NotebookScreen />
 {:else}
 	<ForgeScreen />
 {/if}
@@ -21,6 +26,15 @@
 	>
 		<span class="icon" aria-hidden="true">⚗</span>
 		Bench
+	</button>
+	<button
+		type="button"
+		class:active={current === 'notebook'}
+		aria-current={current === 'notebook' ? 'page' : undefined}
+		onclick={() => setScreen('notebook')}
+	>
+		<span class="icon" aria-hidden="true">✎</span>
+		Notebook
 	</button>
 	<button
 		type="button"
@@ -41,7 +55,7 @@
 		bottom: 0;
 		left: 0;
 		display: grid;
-		grid-template-columns: 1fr 1fr;
+		grid-template-columns: repeat(3, 1fr);
 		max-width: 560px;
 		margin: 0 auto;
 		padding: 6px 10px calc(6px + env(safe-area-inset-bottom));
@@ -57,7 +71,7 @@
 		gap: 6px;
 		min-height: 48px;
 		font-family: 'Caveat Variable', cursive;
-		font-size: 19px;
+		font-size: 17px;
 		font-weight: 700;
 		color: var(--ink-soft);
 		background: transparent;
@@ -71,6 +85,6 @@
 	}
 
 	.icon {
-		font-size: 16px;
+		font-size: 15px;
 	}
 </style>
