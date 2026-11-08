@@ -1,12 +1,22 @@
 <script lang="ts">
 	import { game, setScreen } from '../stores/game';
+	import { reducedMotion } from '../stores/motion';
+	import FirstRun from './FirstRun.svelte';
 	import ForgeScreen from './ForgeScreen.svelte';
 	import NotebookScreen from './NotebookScreen.svelte';
+	import PwaUpdate from './PwaUpdate.svelte';
+	import SettingsScreen from './SettingsScreen.svelte';
 	import TableScreen from './TableScreen.svelte';
 	import WinScreen from './WinScreen.svelte';
 
 	const current = $derived(
-		$game.lastScreen === 'table' ? 'table' : $game.lastScreen === 'notebook' ? 'notebook' : 'forge'
+		$game.lastScreen === 'table'
+			? 'table'
+			: $game.lastScreen === 'notebook'
+				? 'notebook'
+				: $game.lastScreen === 'settings'
+					? 'settings'
+					: 'forge'
 	);
 
 	let showCertificate = $state(false);
@@ -16,49 +26,72 @@
 	});
 </script>
 
-{#if current === 'table'}
-	<TableScreen onShowCertificate={() => (showCertificate = true)} />
-{:else if current === 'notebook'}
-	<NotebookScreen onShowCertificate={() => (showCertificate = true)} />
-{:else}
-	<ForgeScreen />
-{/if}
+<div class="app-root" class:reduce-motion={$reducedMotion}>
+	{#if current === 'table'}
+		<TableScreen onShowCertificate={() => (showCertificate = true)} />
+	{:else if current === 'notebook'}
+		<NotebookScreen onShowCertificate={() => (showCertificate = true)} />
+	{:else if current === 'settings'}
+		<SettingsScreen onShowCertificate={() => (showCertificate = true)} />
+	{:else}
+		<ForgeScreen />
+	{/if}
 
-{#if showCertificate}
-	<WinScreen onClose={() => (showCertificate = false)} />
-{/if}
+	<nav class="bottom-nav" aria-label="Main">
+		<button
+			type="button"
+			class:active={current === 'forge'}
+			aria-current={current === 'forge' ? 'page' : undefined}
+			onclick={() => setScreen('forge')}
+		>
+			<span class="icon" aria-hidden="true">⚗</span>
+			Bench
+		</button>
+		<button
+			type="button"
+			class:active={current === 'notebook'}
+			aria-current={current === 'notebook' ? 'page' : undefined}
+			onclick={() => setScreen('notebook')}
+		>
+			<span class="icon" aria-hidden="true">✎</span>
+			Notebook
+		</button>
+		<button
+			type="button"
+			class:active={current === 'table'}
+			aria-current={current === 'table' ? 'page' : undefined}
+			onclick={() => setScreen('table')}
+		>
+			<span class="icon" aria-hidden="true">▦</span>
+			Table
+		</button>
+		<button
+			type="button"
+			class:active={current === 'settings'}
+			aria-current={current === 'settings' ? 'page' : undefined}
+			onclick={() => setScreen('settings')}
+		>
+			<span class="icon" aria-hidden="true">⚙</span>
+			Settings
+		</button>
+	</nav>
 
-<nav class="bottom-nav" aria-label="Main">
-	<button
-		type="button"
-		class:active={current === 'forge'}
-		aria-current={current === 'forge' ? 'page' : undefined}
-		onclick={() => setScreen('forge')}
-	>
-		<span class="icon" aria-hidden="true">⚗</span>
-		Bench
-	</button>
-	<button
-		type="button"
-		class:active={current === 'notebook'}
-		aria-current={current === 'notebook' ? 'page' : undefined}
-		onclick={() => setScreen('notebook')}
-	>
-		<span class="icon" aria-hidden="true">✎</span>
-		Notebook
-	</button>
-	<button
-		type="button"
-		class:active={current === 'table'}
-		aria-current={current === 'table' ? 'page' : undefined}
-		onclick={() => setScreen('table')}
-	>
-		<span class="icon" aria-hidden="true">▦</span>
-		Table
-	</button>
-</nav>
+	<PwaUpdate />
+
+	{#if !$game.introSeen}
+		<FirstRun />
+	{/if}
+
+	{#if showCertificate}
+		<WinScreen onClose={() => (showCertificate = false)} />
+	{/if}
+</div>
 
 <style>
+	.app-root {
+		min-height: 100dvh;
+	}
+
 	.bottom-nav {
 		position: fixed;
 		z-index: 5;
@@ -66,10 +99,10 @@
 		bottom: 0;
 		left: 0;
 		display: grid;
-		grid-template-columns: repeat(3, 1fr);
+		grid-template-columns: repeat(4, 1fr);
 		max-width: 560px;
 		margin: 0 auto;
-		padding: 6px 10px calc(6px + env(safe-area-inset-bottom));
+		padding: 6px 6px calc(6px + env(safe-area-inset-bottom));
 		background: color-mix(in srgb, var(--paper) 94%, transparent);
 		border-top: 1.5px solid var(--ink);
 		backdrop-filter: blur(6px);
@@ -79,10 +112,10 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: 6px;
+		gap: 4px;
 		min-height: 48px;
 		font-family: 'Caveat Variable', cursive;
-		font-size: 17px;
+		font-size: 15px;
 		font-weight: 700;
 		color: var(--ink-soft);
 		background: transparent;
@@ -96,6 +129,6 @@
 	}
 
 	.icon {
-		font-size: 15px;
+		font-size: 14px;
 	}
 </style>

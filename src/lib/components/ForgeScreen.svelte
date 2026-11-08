@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { ELEMENTS } from '../data/elements';
 	import { FAILURE_LINES } from '../data/failures';
+	import { playSound } from '../game/sound';
 	import { forgePair, game } from '../stores/game';
 	import type { ElementRecord } from '../types';
 	import DiscoveryOverlay from './DiscoveryOverlay.svelte';
@@ -18,9 +19,14 @@
 
 	function pick(symbol: string): void {
 		if (busy) return;
+		if (!slots[0]) {
+			slots[0] = symbol;
+			playSound('pick', $game.settings.sound);
+		} else if (!slots[1]) {
+			slots[1] = symbol;
+			playSound('pick', $game.settings.sound);
+		}
 		message = '';
-		if (!slots[0]) slots[0] = symbol;
-		else if (!slots[1]) slots[1] = symbol;
 	}
 
 	function clearSlot(index: 1 | 2): void {
@@ -38,15 +44,18 @@
 		if (!ready) return;
 
 		busy = true;
+		playSound('forge', $game.settings.sound);
 		const outcome = forgePair(slots[0]!, slots[1]!);
 
 		if (outcome.kind === 'new') {
 			discovered = outcome.element;
 			message = '';
+			playSound('stamp', $game.settings.sound);
 		} else if (outcome.kind === 'known') {
 			message = 'Already in the notebook.';
 		} else {
 			message = FAILURE_LINES[Math.floor(Math.random() * FAILURE_LINES.length)];
+			playSound('fail', $game.settings.sound);
 		}
 
 		clearTimeout(timer);

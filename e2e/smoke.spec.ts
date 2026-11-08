@@ -1,7 +1,14 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+
+async function openApp(page: Page): Promise<void> {
+	await page.goto('/');
+	const intro = page.getByRole('button', { name: /get started/i });
+	await intro.waitFor({ state: 'visible', timeout: 1_500 }).catch(() => {});
+	if (await intro.isVisible()) await intro.click();
+}
 
 test('forges helium and keeps it after reload', async ({ page }) => {
-	await page.goto('/');
+	await openApp(page);
 
 	await expect(page.getByRole('heading', { name: /mendeleev's mess/i })).toBeVisible();
 	await expect(page.getByText('1 / 118')).toBeVisible();
@@ -21,7 +28,7 @@ test('forges helium and keeps it after reload', async ({ page }) => {
 });
 
 test('opens the table and shows all 118 tiles', async ({ page }) => {
-	await page.goto('/');
+	await openApp(page);
 	await page.getByRole('button', { name: 'Table' }).click();
 
 	await expect(page.getByRole('heading', { name: /the table/i })).toBeVisible();
