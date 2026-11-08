@@ -18,6 +18,7 @@ export default defineConfig({
 	test: {
 		expect: { requireAssertions: true },
 		environment: 'jsdom',
+		environmentOptions: { jsdom: { url: 'http://localhost:3000' } },
 		setupFiles: ['./src/test/setup.ts'],
 		include: ['src/**/*.test.ts']
 	}

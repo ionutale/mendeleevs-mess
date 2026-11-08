@@ -2,6 +2,11 @@ import type { GameState, Screen } from '../types';
 
 export const SAVE_KEY = 'mendeleevs-mess:save:v1';
 
+function defaultStorage(): Storage {
+	if (typeof window !== 'undefined') return window.localStorage;
+	return globalThis.localStorage;
+}
+
 const SCREENS: readonly Screen[] = ['forge', 'notebook', 'table', 'settings'];
 
 export function createInitialState(now: number): GameState {
@@ -58,7 +63,7 @@ export function parseState(raw: string): GameState | null {
 
 export function loadState(
 	now: number,
-	storage: Storage = globalThis.localStorage
+	storage: Storage = defaultStorage()
 ): { state: GameState; recovered: boolean } {
 	let raw: string | null = null;
 
@@ -76,7 +81,7 @@ export function loadState(
 	return { state: parsed, recovered: false };
 }
 
-export function saveGame(state: GameState, storage: Storage = globalThis.localStorage): boolean {
+export function saveGame(state: GameState, storage: Storage = defaultStorage()): boolean {
 	try {
 		storage.setItem(SAVE_KEY, JSON.stringify({ version: 1, state }));
 		return true;
@@ -85,7 +90,7 @@ export function saveGame(state: GameState, storage: Storage = globalThis.localSt
 	}
 }
 
-export function clearState(storage: Storage = globalThis.localStorage): void {
+export function clearState(storage: Storage = defaultStorage()): void {
 	try {
 		storage.removeItem(SAVE_KEY);
 	} catch {
