@@ -1,54 +1,60 @@
-# sv
+# Mendeleev's Mess
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A notebook-doodle discovery game: start with one hydrogen and forge all 118 periodic-table elements through hidden recipe pairs. Mobile-first SvelteKit PWA, offline after the first load, local saves.
 
-## Creating a project
+## Run it
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```sh
-# create a new project
-npx sv create my-app
+```bash
+pnpm install
+pnpm dev          # http://localhost:5173
 ```
 
-To recreate this project with the same configuration:
+## Verify it
 
-```sh
-# recreate this project
-pnpm dlx sv@1.3.0 create --template minimal --types ts --add vitest="usages:unit,component" playwright="demo:no" sveltekit-adapter="adapter:static" prettier eslint --install pnpm .
+```bash
+pnpm test         # unit + component tests
+pnpm test:e2e     # Playwright: forge, persistence, table, PWA, axe, keyboard
+pnpm check        # svelte-check
+pnpm lint         # prettier + eslint
+pnpm validate     # 118 elements, reachability, flavor rules
+pnpm build        # static build in build/
+pnpm check:bundle # 250 KB gzip budget for initial JS
 ```
 
-## Adding features
+Preview the production build with `pnpm preview`.
 
-Add features to your project with `sv add`:
+## Content authoring
 
-```sh
-npx sv add
+Elements live in `src/lib/data/elements.ts`:
+
+```ts
+el(8, 'O', 'Oxygen', 'reactive-nonmetal', 'Extremely popular. Sometimes too popular.', ['C', 'He']);
 ```
 
-For example, to add Tailwind CSS:
+Rules enforced by `pnpm validate`:
 
-```sh
-npx sv add tailwindcss
+- 118 unique elements, atomic numbers 1–118.
+- Hydrogen has no recipe; every other element has one ordered-independent pair.
+- Every element must be reachable from hydrogen.
+- Flavor lines are 1–100 characters.
+- `src/lib/data/failures.ts` holds the deadpan invalid-combination lines.
+
+The visual system is CSS/SVG: ruled paper, wobbly cards, category marker stripes, and a small category doodle on each element page.
+
+## Saving
+
+Progress lives in `localStorage` under `mendeleevs-mess:save:v1`. The notebook can export/import a JSON save from Settings. A corrupt save falls back to a fresh hydrogen state with a visible notice.
+
+## PWA
+
+The app is installable and precaches the shell, fonts, icons, and content. The manifest, icon PNGs, and service worker are generated during `pnpm build`. To regenerate icons after changing `static/favicon.svg`:
+
+```bash
+pnpm exec pwa-assets-generator --preset minimal-2023 static/favicon.svg
 ```
 
-## Developing
+A new version shows a refresh prompt instead of reloading mid-forge.
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## Deploy
 
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
+`pnpm build` writes a static site to `build/`. Serve that directory with any static host; `200.html` is the SPA fallback. No server, database, or API keys.

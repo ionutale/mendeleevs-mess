@@ -104,9 +104,9 @@
 		{:else}
 			<p class="empty">Nothing matches. Yet.</p>
 		{/if}
-
-		<ScrapLog entries={$game.scrapLog} onClear={clearScrapLog} />
 	{/if}
+
+	<ScrapLog entries={$game.scrapLog} onClear={clearScrapLog} />
 </main>
 
 <style>

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { CATEGORIES } from '../data/categories';
+	import CategoryDoodle from './CategoryDoodle.svelte';
 	import type { ElementRecord } from '../types';
 
 	let {
@@ -27,6 +28,8 @@
 		<p class="category">{category.label}</p>
 	</div>
 
+	<CategoryDoodle category={element.category} />
+
 	<p class="flavor">{element.flavor}</p>
 
 	<dl class="facts">
@@ -49,6 +52,10 @@
 </article>
 
 <style>
+	.page :global(.doodle) {
+		display: block;
+		margin: 12px auto 0;
+	}
 	.page {
 		padding-bottom: 12px;
 	}

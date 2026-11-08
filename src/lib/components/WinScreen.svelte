@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { trapFocus } from '../actions/trapFocus';
+	import MendeleevDoodle from './MendeleevDoodle.svelte';
 	import { game, markCertificateSeen, resetGame } from '../stores/game';
 
 	let { onClose }: { onClose: () => void } = $props();
@@ -47,7 +48,8 @@
 
 <div class="backdrop">
 	<div class="certificate" use:trapFocus role="dialog" aria-modal="true" aria-label="Certificate">
-		<p class="kicker">Mendeleev's Mess</p>
+		<div class="mascot"><MendeleevDoodle /></div>
+		<p class="kicker">Mendeleev’s Mess</p>
 		<h2>Certificate of Complete Chaos</h2>
 		<p class="score">118 / 118</p>
 		<p class="line">The periodic table has been thoroughly rummaged through.</p>
@@ -87,6 +89,11 @@
 </div>
 
 <style>
+	.mascot {
+		display: flex;
+		justify-content: center;
+		margin-bottom: -8px;
+	}
 	.backdrop {
 		position: fixed;
 		inset: 0;
