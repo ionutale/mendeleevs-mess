@@ -1,33 +1,18 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { exportSave, game, importSave, resetGame, updateSettings } from '../stores/game';
-
-	interface InstallPromptEvent extends Event {
-		prompt: () => Promise<void>;
-		userChoice: Promise<{ outcome: string }>;
-	}
+	import { installPrompt } from '../stores/install';
 
 	let { onShowCertificate }: { onShowCertificate?: () => void } = $props();
 
-	let installEvent = $state<InstallPromptEvent | null>(null);
 	let confirmingReset = $state(false);
 	let transferMessage = $state('');
 
 	const version = '0.1.0';
 
-	onMount(() => {
-		const handler = (event: Event) => {
-			event.preventDefault();
-			installEvent = event as InstallPromptEvent;
-		};
-		window.addEventListener('beforeinstallprompt', handler);
-		return () => window.removeEventListener('beforeinstallprompt', handler);
-	});
-
 	async function install(): Promise<void> {
-		if (!installEvent) return;
-		await installEvent.prompt();
-		installEvent = null;
+		if (!$installPrompt) return;
+		await $installPrompt.prompt();
+		installPrompt.set(null);
 	}
 
 	function download(): void {
@@ -93,7 +78,7 @@
 
 	<section class="panel">
 		<h2>Install</h2>
-		{#if installEvent}
+		{#if $installPrompt}
 			<p class="copy">Keep the laboratory on your home screen.</p>
 			<button type="button" onclick={install}>Install app</button>
 		{:else}
@@ -186,8 +171,8 @@
 	}
 
 	.toggle input {
-		width: 20px;
-		height: 20px;
+		width: 24px;
+		height: 24px;
 		margin-top: 2px;
 		accent-color: var(--ink);
 	}
@@ -210,7 +195,7 @@
 	}
 
 	button {
-		min-height: 40px;
+		min-height: 44px;
 		padding: 6px 12px;
 		font-size: 13px;
 		background: var(--card);
@@ -241,7 +226,8 @@
 	}
 
 	.file input {
-		font-size: 11px;
+		min-height: 44px;
+		font-size: 16px;
 	}
 
 	.message {

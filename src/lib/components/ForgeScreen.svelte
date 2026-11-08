@@ -3,6 +3,7 @@
 	import { FAILURE_LINES } from '../data/failures';
 	import { playSound } from '../game/sound';
 	import { forgePair, game } from '../stores/game';
+	import { get } from 'svelte/store';
 	import type { ElementRecord } from '../types';
 	import DiscoveryOverlay from './DiscoveryOverlay.svelte';
 	import Slot from './Slot.svelte';
@@ -48,9 +49,9 @@
 		const outcome = forgePair(slots[0]!, slots[1]!);
 
 		if (outcome.kind === 'new') {
-			discovered = outcome.element;
 			message = '';
 			playSound('stamp', $game.settings.sound);
+			discovered = get(game).completedAt ? null : outcome.element;
 		} else if (outcome.kind === 'known') {
 			message = 'Already in the notebook.';
 		} else {
@@ -69,6 +70,15 @@
 		slots = [null, null];
 	}
 </script>
+
+<svelte:window
+	onkeydown={(event) => {
+		if (event.key === 'Escape' && !discovered) {
+			slots = [null, null];
+			message = '';
+		}
+	}}
+/>
 
 <main class="app">
 	<header class="top">
@@ -107,6 +117,9 @@
 	</section>
 
 	<Tray elements={tray} onPick={pick} />
+	<p class="visually-hidden" aria-live="polite">
+		{discovered ? `Discovered ${discovered.name}` : ''}
+	</p>
 </main>
 
 {#if discovered}
@@ -199,6 +212,20 @@
 		background: var(--paper-deep);
 		border-radius: 8px;
 		transform: rotate(-0.4deg);
+		animation: wobble 320ms ease;
+	}
+
+	@keyframes wobble {
+		0%,
+		100% {
+			transform: rotate(-0.4deg) translateX(0);
+		}
+		25% {
+			transform: rotate(-1.2deg) translateX(-3px);
+		}
+		75% {
+			transform: rotate(0.8deg) translateX(3px);
+		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {

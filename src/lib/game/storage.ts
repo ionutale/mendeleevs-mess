@@ -1,3 +1,4 @@
+import { ELEMENT_BY_SYMBOL } from '../data/elements';
 import type { GameState, Screen } from '../types';
 
 export const SAVE_KEY = 'mendeleevs-mess:save:v1';
@@ -44,12 +45,48 @@ export function parseState(raw: string): GameState | null {
 	const state = parsed.state;
 	if (state.version !== 1) return null;
 	if (!Array.isArray(state.discovered) || !state.discovered.includes('H')) return null;
+
+	const discovered = state.discovered;
+	if (!discovered.every((symbol) => typeof symbol === 'string' && ELEMENT_BY_SYMBOL.has(symbol))) {
+		return null;
+	}
+	if (new Set(discovered).size !== discovered.length) return null;
+
 	if (!isRecord(state.discoveredAt) || typeof state.discoveredAt.H !== 'number') return null;
+	for (const symbol of discovered) {
+		if (typeof state.discoveredAt[symbol] !== 'number') return null;
+	}
+
 	if (typeof state.attempts !== 'number' || !Array.isArray(state.scrapLog)) return null;
+	for (const entry of state.scrapLog) {
+		if (!isRecord(entry) || !Array.isArray(entry.pair) || entry.pair.length !== 2) return null;
+		if (
+			!entry.pair.every((symbol) => typeof symbol === 'string' && ELEMENT_BY_SYMBOL.has(symbol))
+		) {
+			return null;
+		}
+		if (typeof entry.at !== 'number') return null;
+	}
+
 	if (typeof state.startedAt !== 'number' || typeof state.introSeen !== 'boolean') return null;
 	if (state.completedAt !== null && typeof state.completedAt !== 'number') return null;
 	if (typeof state.certificateSeen !== 'boolean') return null;
-	if (state.completionStats !== null && !isRecord(state.completionStats)) return null;
+	if (state.completedAt !== null && discovered.length !== ELEMENT_BY_SYMBOL.size) {
+		return null;
+	}
+	if (state.completionStats !== null) {
+		if (!isRecord(state.completionStats)) return null;
+		if (
+			typeof state.completionStats.attempts !== 'number' ||
+			typeof state.completionStats.startedAt !== 'number' ||
+			typeof state.completionStats.completedAt !== 'number' ||
+			typeof state.completionStats.elapsedMs !== 'number'
+		) {
+			return null;
+		}
+	}
+	if (state.completedAt !== null && state.completionStats === null) return null;
+	if (state.certificateSeen && state.completedAt === null) return null;
 	if (!isRecord(state.settings)) return null;
 	if (
 		typeof state.settings.sound !== 'boolean' ||

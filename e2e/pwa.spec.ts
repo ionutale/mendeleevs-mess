@@ -15,11 +15,9 @@ test('is installable and works offline after the first load', async ({ page, con
 	await page.evaluate(async () => {
 		await navigator.serviceWorker.ready;
 	});
-	await page.reload();
-	await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
 
 	await context.setOffline(true);
-	await page.reload();
+	await page.goto('/');
 	await expect(page.getByRole('heading', { name: /mendeleev's mess/i })).toBeVisible();
 	await context.setOffline(false);
 });

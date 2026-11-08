@@ -35,16 +35,13 @@ export default defineConfig({
 				generateSW: {
 					globPatterns: ['client/**/*.{js,css,html,svg,png,ico,woff2}'],
 					globStrict: false,
-					navigateFallback: undefined,
-					runtimeCaching: [
-						{
-							urlPattern: ({ request }) => request.mode === 'navigate',
-							handler: 'NetworkFirst',
-							options: { cacheName: 'pages', networkTimeoutSeconds: 3 }
-						}
-					]
+					navigateFallback: '/'
 				},
-				kit: { includeVersionFile: true }
+				kit: {
+					adapterFallback: '200.html',
+					spa: { fallbackMapping: '/' },
+					includeVersionFile: true
+				}
 			}
 		),
 		svelteTesting()

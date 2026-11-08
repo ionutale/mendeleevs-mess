@@ -20,7 +20,6 @@
 	class:selected
 	type="button"
 	draggable="true"
-	aria-pressed={selected}
 	{onclick}
 	ondragstart={(event) => event.dataTransfer?.setData('text/plain', element.symbol)}
 >

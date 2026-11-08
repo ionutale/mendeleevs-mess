@@ -127,9 +127,9 @@
 
 	select,
 	input {
-		min-height: 36px;
-		padding: 4px 6px;
-		font-size: 12px;
+		min-height: 44px;
+		padding: 6px 8px;
+		font-size: 16px;
 		background: var(--card);
 		border: 1.5px solid var(--ink);
 		border-radius: 5px;

@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { game, setScreen } from '../stores/game';
+	import { onMount } from 'svelte';
+	import { game, recovered, setScreen } from '../stores/game';
+	import { captureInstallPrompt } from '../stores/install';
 	import { reducedMotion } from '../stores/motion';
 	import FirstRun from './FirstRun.svelte';
 	import ForgeScreen from './ForgeScreen.svelte';
@@ -21,12 +23,21 @@
 
 	let showCertificate = $state(false);
 
+	onMount(captureInstallPrompt);
+
 	$effect(() => {
 		if ($game.completedAt && !$game.certificateSeen) showCertificate = true;
 	});
 </script>
 
 <div class="app-root" class:reduce-motion={$reducedMotion}>
+	{#if $recovered}
+		<div class="recovery" role="status">
+			<span>A save could not be read. Starting from one hydrogen.</span>
+			<button type="button" onclick={() => recovered.set(false)}>Dismiss</button>
+		</div>
+	{/if}
+
 	{#if current === 'table'}
 		<TableScreen onShowCertificate={() => (showCertificate = true)} />
 	{:else if current === 'notebook'}
@@ -90,6 +101,31 @@
 <style>
 	.app-root {
 		min-height: 100dvh;
+	}
+
+	.recovery {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		margin: 10px 14px 0;
+		padding: 8px 10px;
+		font-size: 12px;
+		color: var(--paper);
+		background: var(--red);
+		border-radius: 6px;
+	}
+
+	.recovery span {
+		flex: 1;
+	}
+
+	.recovery button {
+		min-height: 44px;
+		padding: 4px 8px;
+		font-size: 11px;
+		background: transparent;
+		border: 1px solid rgba(255, 255, 255, 0.6);
+		border-radius: 4px;
 	}
 
 	.bottom-nav {

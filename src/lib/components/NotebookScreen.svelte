@@ -141,7 +141,7 @@
 	}
 
 	.certificate-link {
-		min-height: 34px;
+		min-height: 44px;
 		padding: 4px 9px;
 		font-size: 11px;
 		font-weight: 700;
@@ -167,9 +167,9 @@
 
 	select,
 	input {
-		min-height: 38px;
-		padding: 4px 6px;
-		font-size: 12px;
+		min-height: 44px;
+		padding: 6px 8px;
+		font-size: 16px;
 		background: var(--card);
 		border: 1.5px solid var(--ink);
 		border-radius: 5px;

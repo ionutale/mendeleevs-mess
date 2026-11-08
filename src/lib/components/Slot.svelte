@@ -106,12 +106,12 @@
 
 	.clear {
 		position: absolute;
-		top: 4px;
-		right: 4px;
-		width: 24px;
-		height: 24px;
+		top: 0;
+		right: 0;
+		width: 44px;
+		height: 44px;
 		padding: 0;
-		font-size: 16px;
+		font-size: 18px;
 		line-height: 1;
 		color: var(--ink-soft);
 		background: transparent;

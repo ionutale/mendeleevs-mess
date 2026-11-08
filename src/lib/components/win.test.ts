@@ -89,6 +89,19 @@ describe('completion', () => {
 		expect(writeText).toHaveBeenCalledWith(expect.stringContaining('118 / 118'));
 	});
 
+	it('falls back to a prompt when the clipboard is unavailable', async () => {
+		Object.defineProperty(navigator, 'clipboard', { value: undefined, configurable: true });
+		const prompt = vi.spyOn(window, 'prompt').mockImplementation(() => null);
+
+		seedCompleted();
+		render(App);
+		await screen.findByRole('dialog', { name: /certificate/i });
+		await fireEvent.click(screen.getByRole('button', { name: /share/i }));
+
+		expect(prompt).toHaveBeenCalledWith('Copy this:', expect.stringContaining('118 / 118'));
+		prompt.mockRestore();
+	});
+
 	it('fires when the 118th element is forged', async () => {
 		const discovered = allSymbols.filter((symbol) => symbol !== 'Og');
 		initGame(5_000, {

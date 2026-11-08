@@ -30,6 +30,7 @@ describe('storage', () => {
 		const state = {
 			...createInitialState(1_000),
 			discovered: ['H', 'He'],
+			discoveredAt: { H: 1_000, He: 2_000 },
 			attempts: 3
 		};
 		expect(saveGame(state, storage)).toBe(true);
@@ -60,6 +61,42 @@ describe('storage', () => {
 			throw new Error('quota');
 		};
 		expect(saveGame(createInitialState(1), storage)).toBe(false);
+	});
+
+	it('rejects malformed nested save data', () => {
+		const storage = memoryStorage();
+		const base = createInitialState(1);
+
+		storage.setItem(SAVE_KEY, JSON.stringify({ version: 1, state: { ...base, scrapLog: [{}] } }));
+		expect(loadState(2_000, storage).recovered).toBe(true);
+
+		storage.setItem(
+			SAVE_KEY,
+			JSON.stringify({ version: 1, state: { ...base, discovered: ['H', 'H'] } })
+		);
+		expect(loadState(2_000, storage).recovered).toBe(true);
+
+		storage.setItem(
+			SAVE_KEY,
+			JSON.stringify({
+				version: 1,
+				state: { ...base, discovered: ['H', 'Xx'], discoveredAt: { H: 1, Xx: 2 } }
+			})
+		);
+		expect(loadState(2_000, storage).recovered).toBe(true);
+
+		storage.setItem(
+			SAVE_KEY,
+			JSON.stringify({
+				version: 1,
+				state: {
+					...base,
+					completedAt: 2,
+					completionStats: { attempts: 1, startedAt: 1, completedAt: 2, elapsedMs: 1 }
+				}
+			})
+		);
+		expect(loadState(2_000, storage).recovered).toBe(true);
 	});
 
 	it('rejects malformed state', () => {

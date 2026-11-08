@@ -36,8 +36,15 @@
 
 	async function share(): Promise<void> {
 		const text = `Mendeleev's Mess — 118 / 118 elements forged in ${stats.attempts} attempts (${elapsed}).`;
+		const writeText = navigator.clipboard?.writeText?.bind(navigator.clipboard);
+		if (!writeText) {
+			window.prompt('Copy this:', text);
+			shareMessage = 'Ready to copy.';
+			return;
+		}
+
 		try {
-			await navigator.clipboard?.writeText(text);
+			await writeText(text);
 			shareMessage = 'Copied to the clipboard.';
 		} catch {
 			window.prompt('Copy this:', text);
@@ -193,7 +200,7 @@
 	}
 
 	button {
-		min-height: 42px;
+		min-height: 44px;
 		padding: 6px 12px;
 		font-size: 13px;
 		background: var(--card);

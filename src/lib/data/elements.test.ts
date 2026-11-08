@@ -22,7 +22,7 @@ describe('full content', () => {
 	});
 
 	it('has failure copy that never hints', () => {
-		expect(FAILURE_LINES.length).toBeGreaterThanOrEqual(4);
+		expect(FAILURE_LINES.length).toBeGreaterThanOrEqual(24);
 		for (const line of FAILURE_LINES) {
 			expect(line.toLowerCase()).not.toMatch(/hint|try combining/);
 		}

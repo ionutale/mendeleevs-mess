@@ -59,6 +59,8 @@ export function validateElements(elements: readonly ElementRecord[]): Validation
 		errors.push('Hydrogen must not have a recipe.');
 	}
 
+	const seenPairs = new Map<string, string>();
+
 	for (const element of elements) {
 		if (element.symbol === 'H') continue;
 
@@ -71,6 +73,15 @@ export function validateElements(elements: readonly ElementRecord[]): Validation
 			if (!symbols.has(parent)) {
 				errors.push(`${element.symbol} has a recipe with unknown symbol ${parent}.`);
 			}
+		}
+
+		const [a, b] = element.recipe;
+		const pair = a <= b ? `${a}+${b}` : `${b}+${a}`;
+		const existing = seenPairs.get(pair);
+		if (existing) {
+			errors.push(`Pair ${pair} produces both ${existing} and ${element.symbol}.`);
+		} else {
+			seenPairs.set(pair, element.symbol);
 		}
 	}
 

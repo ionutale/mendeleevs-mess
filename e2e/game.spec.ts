@@ -60,6 +60,16 @@ test('settings survive a reload', async ({ page }) => {
 	await expect(page.getByRole('checkbox', { name: /sound/i })).not.toBeChecked();
 });
 
+test('desktop drag fills a forge slot', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 800 });
+	await openApp(page);
+
+	const card = page.getByRole('button', { name: /hydrogen/i }).first();
+	const slot = page.getByTestId('slot-1');
+	await card.dragTo(slot);
+	await expect(slot).toContainText('H');
+});
+
 test('the notebook opens an element page', async ({ page }) => {
 	await seed(page, {
 		version: 1,

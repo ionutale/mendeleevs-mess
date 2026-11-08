@@ -66,7 +66,7 @@
 	}
 
 	button {
-		min-height: 36px;
+		min-height: 44px;
 		padding: 4px 10px;
 		font-size: 12px;
 		background: var(--card);

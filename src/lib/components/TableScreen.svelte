@@ -98,8 +98,8 @@
 	}
 
 	.views button {
-		min-height: 38px;
-		padding: 6px 10px;
+		min-height: 44px;
+		padding: 8px 10px;
 		font-size: 12px;
 		font-weight: 700;
 		background: var(--card);
@@ -116,18 +116,19 @@
 		display: flex;
 		align-items: center;
 		gap: 6px;
-		font-size: 12px;
+		min-height: 44px;
+		font-size: 14px;
 	}
 
 	.missing input {
-		width: 18px;
-		height: 18px;
+		width: 24px;
+		height: 24px;
 		accent-color: var(--ink);
 	}
 
 	.certificate-link {
-		min-height: 38px;
-		padding: 6px 10px;
+		min-height: 44px;
+		padding: 8px 10px;
 		font-size: 12px;
 		font-weight: 700;
 		background: var(--card);

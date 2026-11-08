@@ -61,7 +61,7 @@
 	}
 
 	.back {
-		min-height: 40px;
+		min-height: 44px;
 		margin-bottom: 12px;
 		padding: 4px 8px;
 		font-size: 13px;

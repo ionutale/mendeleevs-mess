@@ -3,6 +3,7 @@ import { get } from 'svelte/store';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App.svelte';
 import SettingsScreen from './SettingsScreen.svelte';
+import { ELEMENTS } from '../data/elements';
 import { game, initGame } from '../stores/game';
 import { gameState } from '../test/fixtures';
 
@@ -25,6 +26,13 @@ describe('first run', () => {
 		initGame(5_000, { introSeen: true });
 		render(App);
 		expect(screen.queryByRole('dialog', { name: /welcome/i })).not.toBeInTheDocument();
+	});
+
+	it('shows a recovery notice for a corrupt save', () => {
+		window.localStorage.setItem('mendeleevs-mess:save:v1', '{bad');
+		initGame(5_000);
+		render(App);
+		expect(screen.getByRole('status')).toHaveTextContent(/could not be read/i);
 	});
 });
 
@@ -80,9 +88,11 @@ describe('settings', () => {
 
 	it('opens the certificate from settings when complete', async () => {
 		const onShowCertificate = vi.fn();
+		const all = ELEMENTS.map((element) => element.symbol);
 		initGame(5_000, {
 			introSeen: true,
-			discovered: ['H'],
+			discovered: all,
+			discoveredAt: Object.fromEntries(all.map((symbol, index) => [symbol, index + 1])),
 			completedAt: 9_000,
 			certificateSeen: true,
 			completionStats: { attempts: 1, startedAt: 1, completedAt: 9_000, elapsedMs: 8_000 }
