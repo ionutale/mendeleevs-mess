@@ -59,7 +59,7 @@
 
 **Files:**
 
-- Create: `package.json`, `svelte.config.js`, `vite.config.ts`, `src/routes/+layout.ts`, `src/routes/+layout.svelte`, `src/routes/+page.svelte`, `src/routes/page.test.ts`, `src/test/setup.ts`, `src/lib/styles/base.css`, `playwright.config.ts`
+- Create: `package.json`, `vite.config.ts`, `src/routes/+layout.ts`, `src/routes/+layout.svelte`, `src/routes/+page.svelte`, `src/routes/page.test.ts`, `src/test/setup.ts`, `src/lib/styles/base.css`, `playwright.config.ts`
 - Keep: existing `docs/` folder
 
 **Interfaces:**
@@ -83,8 +83,6 @@ pnpm exec playwright install chromium
 
 - [ ] **Step 2: Configure**
 
-`svelte.config.js`: `adapter({ fallback: '200.html' })` from `@sveltejs/adapter-static`, `vitePreprocess()`.
-
 `src/routes/+layout.ts`:
 
 ```ts
@@ -95,12 +93,13 @@ export const prerender = false;
 `vite.config.ts`:
 
 ```ts
+import adapter from '@sveltejs/adapter-static';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { svelteTesting } from '@testing-library/svelte/vite';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-	plugins: [sveltekit(), svelteTesting()],
+	plugins: [sveltekit({ adapter: adapter({ fallback: '200.html' }) }), svelteTesting()],
 	test: {
 		environment: 'jsdom',
 		setupFiles: ['./src/test/setup.ts'],
@@ -109,7 +108,7 @@ export default defineConfig({
 });
 ```
 
-`src/test/setup.ts`: `import '@testing-library/jest-dom/vitest'`.
+`src/test/setup.ts`: `import '@testing-library/jest-dom/vitest';` plus a Map-backed `localStorage` fallback when jsdom does not expose one.
 
 `playwright.config.ts`: 390×844 touch context; `webServer: { command: 'pnpm build && pnpm preview --host 127.0.0.1 --port 4173', url: 'http://127.0.0.1:4173', reuseExistingServer: !process.env.CI }`.
 
@@ -597,7 +596,7 @@ git commit -m "feat: add Svelte game store with autosave and import/export"
 import { render, screen } from '@testing-library/svelte';
 import { fireEvent } from '@testing-library/svelte';
 import App from './App.svelte';
-import { initGame } from '$lib/stores/game';
+import { initGame } from '../stores/game';
 
 beforeEach(() => {
 	localStorage.clear();
@@ -696,9 +695,9 @@ import { get } from 'svelte/store';
 import { fireEvent, render, screen } from '@testing-library/svelte';
 import { beforeEach, describe, expect, it } from 'vitest';
 import ForgeScreen from './ForgeScreen.svelte';
-import { game, initGame } from '$lib/stores/game';
-import { ELEMENTS } from '$lib/data/elements';
-import { normalizePair } from '$lib/game/engine';
+import { game, initGame } from '../stores/game';
+import { ELEMENTS } from '../data/elements';
+import { normalizePair } from '../game/engine';
 
 beforeEach(() => {
 	localStorage.clear();
