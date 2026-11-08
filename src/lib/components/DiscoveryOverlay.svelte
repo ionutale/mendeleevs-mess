@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { trapFocus } from '../actions/trapFocus';
 	import { CATEGORIES } from '../data/categories';
 	import type { ElementRecord } from '../types';
 
@@ -14,7 +15,7 @@
 />
 
 <div class="backdrop">
-	<div class="page" role="dialog" aria-modal="true" aria-label={element.name}>
+	<div class="page" use:trapFocus role="dialog" aria-modal="true" aria-label={element.name}>
 		<p class="stamp marker">New element</p>
 		<div class="card">
 			<span class="stripe" style:background={category.color}></span>

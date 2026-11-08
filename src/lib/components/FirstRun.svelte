@@ -1,9 +1,16 @@
 <script lang="ts">
+	import { trapFocus } from '../actions/trapFocus';
 	import { dismissIntro } from '../stores/game';
 </script>
 
 <div class="backdrop">
-	<div class="intro" role="dialog" aria-modal="true" aria-label="Welcome to Mendeleev's Mess">
+	<div
+		class="intro"
+		use:trapFocus
+		role="dialog"
+		aria-modal="true"
+		aria-label="Welcome to Mendeleev's Mess"
+	>
 		<p class="kicker">A note from the lab</p>
 		<h2>You have one hydrogen.</h2>
 		<p class="copy">

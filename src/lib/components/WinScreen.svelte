@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { trapFocus } from '../actions/trapFocus';
 	import { game, markCertificateSeen, resetGame } from '../stores/game';
 
 	let { onClose }: { onClose: () => void } = $props();
@@ -45,7 +46,7 @@
 </script>
 
 <div class="backdrop">
-	<div class="certificate" role="dialog" aria-modal="true" aria-label="Certificate">
+	<div class="certificate" use:trapFocus role="dialog" aria-modal="true" aria-label="Certificate">
 		<p class="kicker">Mendeleev's Mess</p>
 		<h2>Certificate of Complete Chaos</h2>
 		<p class="score">118 / 118</p>
