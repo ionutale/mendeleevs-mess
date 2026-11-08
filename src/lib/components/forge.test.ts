@@ -2,6 +2,8 @@ import { fireEvent, render, screen } from '@testing-library/svelte';
 import { get } from 'svelte/store';
 import { beforeEach, describe, expect, it } from 'vitest';
 import App from './App.svelte';
+import { ELEMENTS } from '../data/elements';
+import { normalizePair } from '../game/engine';
 import { game, initGame } from '../stores/game';
 
 beforeEach(() => {
@@ -10,10 +12,10 @@ beforeEach(() => {
 });
 
 describe('walking skeleton', () => {
-	it('shows hydrogen and the temporary two-element progress', () => {
+	it('shows hydrogen and the full progress counter', () => {
 		render(App);
 		expect(screen.getByRole('heading', { name: /mendeleev's mess/i })).toBeInTheDocument();
-		expect(screen.getByText('1 / 2')).toBeInTheDocument();
+		expect(screen.getByText('1 / 118')).toBeInTheDocument();
 		expect(screen.getByRole('button', { name: /hydrogen/i })).toBeInTheDocument();
 	});
 
@@ -26,24 +28,39 @@ describe('walking skeleton', () => {
 		await fireEvent.click(screen.getByRole('button', { name: /^forge$/i }));
 
 		expect(await screen.findByRole('dialog', { name: /helium/i })).toBeInTheDocument();
-		expect(screen.getByText('2 / 2')).toBeInTheDocument();
+		expect(screen.getByText('2 / 118')).toBeInTheDocument();
 	});
 
 	it('keeps both cards after an invalid pair and shows a deadpan line', async () => {
+		const discovered = ELEMENTS.slice(0, 20).map((element) => element.symbol);
+		const valid = new Set(
+			ELEMENTS.filter((element) => element.recipe).map((element) =>
+				normalizePair(element.recipe![0], element.recipe![1]).join('+')
+			)
+		);
+		const [a, b] = discovered
+			.flatMap((left, index) =>
+				discovered.slice(index).map((right) => [left, right] as [string, string])
+			)
+			.find(([left, right]) => !valid.has(normalizePair(left, right).join('+')))!;
+
 		initGame(5_000, {
-			discovered: ['H', 'He'],
-			discoveredAt: { H: 1, He: 2 }
+			discovered,
+			discoveredAt: Object.fromEntries(discovered.map((symbol, index) => [symbol, index + 1]))
 		});
 		render(App);
 
-		await fireEvent.click(screen.getByRole('button', { name: /hydrogen/i }));
-		await fireEvent.click(screen.getByRole('button', { name: /helium/i }));
+		const byName = (symbol: string) =>
+			new RegExp(ELEMENTS.find((element) => element.symbol === symbol)!.name, 'i');
+
+		await fireEvent.click(screen.getByRole('button', { name: byName(a) }));
+		await fireEvent.click(screen.getByRole('button', { name: byName(b) }));
 		await fireEvent.click(screen.getByRole('button', { name: /^forge$/i }));
 
 		expect(await screen.findByRole('status')).toHaveTextContent(/.+/);
 		expect(screen.getByRole('button', { name: /clear slot 1/i })).toBeInTheDocument();
 		expect(screen.getByRole('button', { name: /clear slot 2/i })).toBeInTheDocument();
-		expect(get(game).discovered).toEqual(['H', 'He']);
+		expect(get(game).discovered).toEqual(discovered);
 	});
 
 	it('does not double-forge on a rapid double press', async () => {

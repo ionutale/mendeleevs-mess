@@ -19,9 +19,11 @@
 	class="element-card"
 	class:selected
 	type="button"
+	draggable="true"
 	aria-pressed={selected}
 	aria-label={`${element.name}, element ${element.number}, ${category.label}`}
 	{onclick}
+	ondragstart={(event) => event.dataTransfer?.setData('text/plain', element.symbol)}
 >
 	<span class="stripe" style:background={category.color}></span>
 	<span class="number">{element.number}</span>

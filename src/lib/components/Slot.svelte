@@ -5,18 +5,32 @@
 	let {
 		symbol,
 		index,
-		onClear
+		onClear,
+		onDrop
 	}: {
 		symbol: string | null;
 		index: 1 | 2;
 		onClear: () => void;
+		onDrop?: (symbol: string) => void;
 	} = $props();
 
 	const element = $derived(symbol ? ELEMENT_BY_SYMBOL.get(symbol) : undefined);
 	const category = $derived(element ? CATEGORIES[element.category] : undefined);
 </script>
 
-<div class="slot" class:filled={!!element} data-testid={`slot-${index}`}>
+<div
+	class="slot"
+	class:filled={!!element}
+	data-testid={`slot-${index}`}
+	role="group"
+	aria-label={`Forge slot ${index}`}
+	ondragover={(event) => event.preventDefault()}
+	ondrop={(event) => {
+		event.preventDefault();
+		const dropped = event.dataTransfer?.getData('text/plain');
+		if (dropped) onDrop?.(dropped);
+	}}
+>
 	{#if element && category}
 		<span class="stripe" style:background={category.color}></span>
 		<span class="number">{element.number}</span>

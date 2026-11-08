@@ -28,6 +28,12 @@
 		message = '';
 	}
 
+	function dropInto(index: 1 | 2, symbol: string): void {
+		if (busy) return;
+		slots[index - 1] = symbol;
+		message = '';
+	}
+
 	function forge(): void {
 		if (!ready) return;
 
@@ -67,9 +73,19 @@
 		<p class="side-note marker">combine two. regret nothing.</p>
 
 		<div class="slots">
-			<Slot symbol={slots[0]} index={1} onClear={() => clearSlot(1)} />
+			<Slot
+				symbol={slots[0]}
+				index={1}
+				onClear={() => clearSlot(1)}
+				onDrop={(symbol) => dropInto(1, symbol)}
+			/>
 			<span class="plus marker" aria-hidden="true">+</span>
-			<Slot symbol={slots[1]} index={2} onClear={() => clearSlot(2)} />
+			<Slot
+				symbol={slots[1]}
+				index={2}
+				onClear={() => clearSlot(2)}
+				onDrop={(symbol) => dropInto(2, symbol)}
+			/>
 		</div>
 
 		<button class="forge" type="button" disabled={!ready} onclick={forge}>
