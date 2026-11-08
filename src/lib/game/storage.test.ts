@@ -1,11 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-	createInitialState,
-	loadState,
-	parseState,
-	saveGame,
-	SAVE_KEY
-} from './storage';
+import { createInitialState, loadState, parseState, saveGame, SAVE_KEY } from './storage';
 
 function memoryStorage(): Storage {
 	const map = new Map<string, string>();

@@ -54,9 +54,7 @@ export function forge(
 	if (!recipe) {
 		const known = new Set(elements.map((element) => element.symbol));
 		const scrapLog =
-			known.has(a) && known.has(b)
-				? addScrapEntry(state.scrapLog, [a, b], now)
-				: state.scrapLog;
+			known.has(a) && known.has(b) ? addScrapEntry(state.scrapLog, [a, b], now) : state.scrapLog;
 		return {
 			state: { ...state, attempts, scrapLog },
 			outcome: { kind: 'invalid' }

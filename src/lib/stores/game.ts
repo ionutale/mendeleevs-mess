@@ -24,7 +24,11 @@ game.subscribe((state) => {
 
 export function initGame(now = Date.now(), overrides: Partial<GameState> = {}): void {
 	const loaded = loadState(now);
-	const state = { ...loaded.state, ...overrides, settings: { ...loaded.state.settings, ...overrides.settings } };
+	const state = {
+		...loaded.state,
+		...overrides,
+		settings: { ...loaded.state.settings, ...overrides.settings }
+	};
 	ready = true;
 	game.set(state);
 	recovered.set(loaded.recovered);

@@ -51,7 +51,10 @@ export function parseState(raw: string): GameState | null {
 	if (typeof state.certificateSeen !== 'boolean') return null;
 	if (state.completionStats !== null && !isRecord(state.completionStats)) return null;
 	if (!isRecord(state.settings)) return null;
-	if (typeof state.settings.sound !== 'boolean' || typeof state.settings.reduceMotion !== 'boolean') {
+	if (
+		typeof state.settings.sound !== 'boolean' ||
+		typeof state.settings.reduceMotion !== 'boolean'
+	) {
 		return null;
 	}
 	if (typeof state.lastScreen !== 'string' || !SCREENS.includes(state.lastScreen as Screen)) {
@@ -65,7 +68,7 @@ export function loadState(
 	now: number,
 	storage: Storage = defaultStorage()
 ): { state: GameState; recovered: boolean } {
-	let raw: string | null = null;
+	let raw: string | null;
 
 	try {
 		raw = storage.getItem(SAVE_KEY);
