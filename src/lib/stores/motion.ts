@@ -1,4 +1,4 @@
-import { derived } from 'svelte/store';
+import { derived, readable } from 'svelte/store';
 import { game } from './game';
 
 function prefersReducedMotion(): boolean {
@@ -6,6 +6,17 @@ function prefersReducedMotion(): boolean {
 	return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-export const reducedMotion = derived(game, ($game) => {
-	return $game.settings.reduceMotion || prefersReducedMotion();
+const systemReducedMotion = readable(prefersReducedMotion(), (set) => {
+	if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return;
+
+	const query = window.matchMedia('(prefers-reduced-motion: reduce)');
+	const onChange = (event: MediaQueryListEvent) => set(event.matches);
+	query.addEventListener?.('change', onChange);
+
+	return () => query.removeEventListener?.('change', onChange);
 });
+
+export const reducedMotion = derived(
+	[game, systemReducedMotion],
+	([$game, $system]) => $game.settings.reduceMotion || $system
+);

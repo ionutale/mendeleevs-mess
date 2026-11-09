@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { game, recovered, setScreen } from '../stores/game';
+	import { game, recovered, saveError, setScreen } from '../stores/game';
 	import { captureInstallPrompt } from '../stores/install';
 	import { reducedMotion } from '../stores/motion';
 	import FirstRun from './FirstRun.svelte';
@@ -35,6 +35,13 @@
 		<div class="recovery" role="status">
 			<span>A save could not be read. Starting from one hydrogen.</span>
 			<button type="button" onclick={() => recovered.set(false)}>Dismiss</button>
+		</div>
+	{/if}
+
+	{#if $saveError}
+		<div class="recovery save-error" role="status">
+			<span>Progress could not be saved. Storage may be full or blocked.</span>
+			<button type="button" onclick={() => saveError.set(false)}>Dismiss</button>
 		</div>
 	{/if}
 

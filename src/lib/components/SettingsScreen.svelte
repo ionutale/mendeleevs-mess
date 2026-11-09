@@ -1,10 +1,12 @@
 <script lang="ts">
+	import { tick } from 'svelte';
 	import { exportSave, game, importSave, resetGame, updateSettings } from '../stores/game';
 	import { installPrompt } from '../stores/install';
 
 	let { onShowCertificate }: { onShowCertificate?: () => void } = $props();
 
 	let confirmingReset = $state(false);
+	let confirmReset = $state<HTMLButtonElement | undefined>();
 	let transferMessage = $state('');
 
 	const version = '0.1.0';
@@ -33,6 +35,12 @@
 		const text = await file.text();
 		transferMessage = importSave(text) ? 'Save imported.' : 'That file is not a valid save.';
 		input.value = '';
+	}
+
+	async function armReset(): Promise<void> {
+		confirmingReset = true;
+		await tick();
+		confirmReset?.focus();
 	}
 
 	function erase(): void {
@@ -117,11 +125,13 @@
 		{#if confirmingReset}
 			<p class="copy">This deletes every discovery and starts again from one hydrogen.</p>
 			<div class="transfer">
-				<button class="danger" type="button" onclick={erase}>Yes, erase it</button>
+				<button class="danger" type="button" bind:this={confirmReset} onclick={erase}
+					>Yes, erase it</button
+				>
 				<button type="button" onclick={() => (confirmingReset = false)}>Cancel</button>
 			</div>
 		{:else}
-			<button type="button" onclick={() => (confirmingReset = true)}>Reset progress</button>
+			<button type="button" onclick={armReset}>Reset progress</button>
 		{/if}
 	</section>
 

@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App.svelte';
 import SettingsScreen from './SettingsScreen.svelte';
 import { ELEMENTS } from '../data/elements';
-import { game, initGame } from '../stores/game';
+import { forgePair, game, initGame, saveError } from '../stores/game';
 import { gameState } from '../test/fixtures';
 
 beforeEach(() => {
@@ -26,6 +26,20 @@ describe('first run', () => {
 		initGame(5_000, { introSeen: true });
 		render(App);
 		expect(screen.queryByRole('dialog', { name: /welcome/i })).not.toBeInTheDocument();
+	});
+
+	it('warns when progress cannot be saved', () => {
+		initGame(5_000, { introSeen: true });
+		const spy = vi.spyOn(window.localStorage, 'setItem').mockImplementation(() => {
+			throw new Error('quota');
+		});
+
+		forgePair('H', 'H');
+		render(App);
+
+		expect(get(saveError)).toBe(true);
+		expect(screen.getByText(/progress could not be saved/i)).toBeInTheDocument();
+		spy.mockRestore();
 	});
 
 	it('shows a recovery notice for a corrupt save', () => {
@@ -51,6 +65,15 @@ describe('settings', () => {
 			sound: false,
 			reduceMotion: true
 		});
+	});
+
+	it('focuses the confirmation after arming a reset', async () => {
+		initGame(5_000, { introSeen: true });
+		render(SettingsScreen);
+
+		await fireEvent.click(screen.getByRole('button', { name: /reset progress/i }));
+
+		expect(screen.getByRole('button', { name: /yes, erase it/i })).toHaveFocus();
 	});
 
 	it('requires two steps to reset progress', async () => {

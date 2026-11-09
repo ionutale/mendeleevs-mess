@@ -15,11 +15,16 @@ export { SAVE_KEY };
 
 export const game = writable<GameState>(createInitialState(0));
 export const recovered = writable(false);
+export const saveError = writable(false);
 
 let ready = false;
 
+function persist(state: GameState): void {
+	saveError.set(!saveGame(state));
+}
+
 game.subscribe((state) => {
-	if (ready) saveGame(state);
+	if (ready) persist(state);
 });
 
 export function initGame(now = Date.now(), overrides: Partial<GameState> = {}): void {
@@ -32,7 +37,7 @@ export function initGame(now = Date.now(), overrides: Partial<GameState> = {}): 
 	ready = true;
 	game.set(state);
 	recovered.set(loaded.recovered);
-	saveGame(state);
+	persist(state);
 }
 
 export function forgePair(a: string, b: string): ForgeOutcome {
@@ -65,7 +70,7 @@ export function resetGame(): void {
 	clearState();
 	const state = createInitialState(Date.now());
 	game.set(state);
-	saveGame(state);
+	persist(state);
 }
 
 export function exportSave(): string {
@@ -77,6 +82,6 @@ export function importSave(raw: string): boolean {
 	if (!parsed) return false;
 	game.set(parsed);
 	recovered.set(false);
-	saveGame(parsed);
+	persist(parsed);
 	return true;
 }
