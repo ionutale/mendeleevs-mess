@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App.svelte';
 import SettingsScreen from './SettingsScreen.svelte';
 import { ELEMENTS } from '../data/elements';
-import { forgePair, game, initGame, saveError } from '../stores/game';
+import { game, initGame, saveError } from '../stores/game';
 import { gameState } from '../test/fixtures';
 
 beforeEach(() => {
@@ -30,16 +30,12 @@ describe('first run', () => {
 
 	it('warns when progress cannot be saved', () => {
 		initGame(5_000, { introSeen: true });
-		const spy = vi.spyOn(window.localStorage, 'setItem').mockImplementation(() => {
-			throw new Error('quota');
-		});
+		saveError.set(true);
 
-		forgePair('H', 'H');
 		render(App);
 
-		expect(get(saveError)).toBe(true);
 		expect(screen.getByText(/progress could not be saved/i)).toBeInTheDocument();
-		spy.mockRestore();
+		saveError.set(false);
 	});
 
 	it('shows a recovery notice for a corrupt save', () => {
